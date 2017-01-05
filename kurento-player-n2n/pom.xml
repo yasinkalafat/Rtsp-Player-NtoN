@@ -16,7 +16,7 @@
 		<demo.port>8087</demo.port>
 
 		<!-- Main class -->
-		<start-class>com.arvento.RtspPlayer.PlayerApp</start-class>
+		<start-class>com.arvento.rtspPlayer.PlayerApp</start-class>
 
 	</properties>
 	<dependencies>
@@ -93,7 +93,7 @@
 						<artifactId>maven-assembly-plugin</artifactId>
 						<configuration>
 							<descriptor>src/assembly/bin.xml</descriptor>
-							<finalName>${project.artifactId}-${project.version}</finalName>
+							<finalName>${project.artifactId}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 						<executions>
@@ -156,7 +156,7 @@
 								<manifest>
 									<addClasspath>true</addClasspath>
 									<classpathPrefix>lib/</classpathPrefix>
-									<mainClass>com.arvento.RtspPlayer.PlayerApp</mainClass>
+									<mainClass>com.arvento.rtspPlayer.PlayerApp</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
