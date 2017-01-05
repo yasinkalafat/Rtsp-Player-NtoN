@@ -17,7 +17,7 @@ public class SessionManager {
 	private final Logger log = LoggerFactory.getLogger(SessionManager.class);
 
 	private final ConcurrentHashMap<String, UserSession> users;
-	private final ConcurrentHashMap<String, ArrayList<WebSocketSession>> sessions;
+	private final ConcurrentHashMap<String, ArrayList<UserSession>> sessions;
 
 	public static SessionManager getInstance() {
 		if (instance == null)
@@ -27,7 +27,7 @@ public class SessionManager {
 
 	private SessionManager() {
 		users = new ConcurrentHashMap<String, UserSession>();
-		sessions = new ConcurrentHashMap<String, ArrayList<WebSocketSession>>();
+		sessions = new ConcurrentHashMap<String, ArrayList<UserSession>>();
 	}
 
 	public void addUser(String id, UserSession user) {
@@ -42,20 +42,20 @@ public class SessionManager {
 		return users.get(sessionId);
 	}
 
-	public void addSession(String videoUrl, WebSocketSession session) {
+	public void addSession(String videoUrl, UserSession session) {
 		if (!sessions.containsKey(videoUrl)) {
-			sessions.put(videoUrl, new ArrayList<WebSocketSession>());
+			sessions.put(videoUrl, new ArrayList<UserSession>());
 		}
 		sessions.get(videoUrl).add(session);
 	}
 
 	public void sendPlayEnd(String videoUrl) {
 		if (sessions.containsKey(videoUrl)) {
-			for (WebSocketSession session : sessions.get(videoUrl)) {
-				if (users.containsKey(session.getId())) {
+			for (UserSession session : sessions.get(videoUrl)) {
+				if (users.containsKey(session.getWsSession().getId())) {
 					JsonObject response = new JsonObject();
 					response.addProperty("id", "playEnd");
-					sendMessage(session, response.toString());
+					sendMessage(session.getWsSession(), response.toString());
 				}
 			}
 		}
@@ -64,12 +64,12 @@ public class SessionManager {
 
 	public void sendError(String videoUrl, String message) {
 		if (sessions.containsKey(videoUrl)) {
-			for (WebSocketSession session : sessions.get(videoUrl)) {
-				if (users.containsKey(session.getId())) {
+			for (UserSession session : sessions.get(videoUrl)) {
+				if (users.containsKey(session.getWsSession().getId())) {
 					JsonObject response = new JsonObject();
 					response.addProperty("id", "error");
 					response.addProperty("message", message);
-					sendMessage(session, response.toString());
+					sendMessage(session.getWsSession(), response.toString());
 				}
 			}
 		}

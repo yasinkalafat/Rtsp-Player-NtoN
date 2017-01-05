@@ -72,7 +72,7 @@ public class PlayerHandler extends TextWebSocketHandler {
 
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
 		// 1. Media pipeline
-		final UserSession user = new UserSession();
+		final UserSession user = new UserSession(session);
 		String videourl = jsonMessage.get("videourl").getAsString();
 		RTSPSource source = manager.getRTSPSource(kurento, videourl);
 		manager.addUserToSource(source, user);
@@ -83,7 +83,7 @@ public class PlayerHandler extends TextWebSocketHandler {
 
 		user.setWebRtcEndpoint(webRtcEndpoint);
 		sessionManager.addUser(session.getId(), user);
-		sessionManager.addSession(videourl, session);
+		sessionManager.addSession(videourl, user);
 
 		playerEndpoint.connect(webRtcEndpoint);
 

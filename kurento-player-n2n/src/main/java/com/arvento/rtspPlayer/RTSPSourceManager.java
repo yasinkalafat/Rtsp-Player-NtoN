@@ -8,7 +8,6 @@ import org.kurento.client.KurentoClient;
 public class RTSPSourceManager {
 
 	private static RTSPSourceManager instance = null;
-	private ConcurrentHashMap<String, RTSPSource> sources;
 	private ConcurrentHashMap<RTSPSource, ArrayList<UserSession>> viewers;
 
 	public static RTSPSourceManager getInstance() {
@@ -18,15 +17,15 @@ public class RTSPSourceManager {
 	}
 
 	private RTSPSourceManager() {
-		sources = new ConcurrentHashMap<String, RTSPSource>();
 		viewers = new ConcurrentHashMap<RTSPSource, ArrayList<UserSession>>();
 	}
 
 	public RTSPSource getRTSPSource(KurentoClient kurento, String videourl) {
-		if (!sources.containsKey(videourl)) {
-			sources.put(videourl, new RTSPSource(kurento, videourl));
+		for (RTSPSource source : viewers.keySet()) {
+			if (source.getUrl().equals(videourl))
+				return source;
 		}
-		return sources.get(videourl);
+		return new RTSPSource(kurento, videourl);
 	}
 
 	public void addUserToSource(RTSPSource source, UserSession user) {
@@ -38,12 +37,10 @@ public class RTSPSourceManager {
 
 	public void removeUserFromSource(UserSession user) {
 		RTSPSource source = getSourceFromUser(user);
-		if(source != null)
-		{
+		if (source != null) {
 			viewers.get(source).remove(user);
 			if (viewers.get(source).size() == 0) {
-				String url = getUrlFromSource(source);
-				sources.remove(url);
+				viewers.remove(source);
 				source.stop();
 			}
 		}
@@ -53,15 +50,6 @@ public class RTSPSourceManager {
 	private RTSPSource getSourceFromUser(UserSession value) {
 		for (RTSPSource o : viewers.keySet()) {
 			if (viewers.get(o).contains(value)) {
-				return o;
-			}
-		}
-		return null;
-	}
-
-	private String getUrlFromSource(RTSPSource value) {
-		for (String o : sources.keySet()) {
-			if (sources.get(o).equals(value)) {
 				return o;
 			}
 		}

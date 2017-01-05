@@ -56,18 +56,18 @@ public class RTSPSource {
 		this.playerEndpoint = playerEndpoint;
 	}
 
-	public void stop() {
-		this.playerEndpoint.stop();
-		this.pipeline.release();
-		log.debug("stopped RTSP Source"+ getUrl());
-	}
-
 	public String getUrl() {
 		return url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public void stop() {
+		this.playerEndpoint.stop();
+		this.pipeline.release();
+		log.debug("stopped RTSP Source" + getUrl());
 	}
 
 }
